@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChaoShield | Proof of Payment & Document Fraud Verification</title>
+  <meta name="description" content="Automated forensic analysis platform for detecting fraudulent payment notifications and manipulated digital documents. Instant metadata extraction, SHA-256 integrity, visual forensics, and document verification.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- PDF.js from official cdnjs for robust client-side PDF parsing & high-res canvas rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="cyber-theme">
+
+  <!-- TOP SECURITY SENTINEL STATUS BAR -->
+  <header class="cyber-topbar">
+    <div class="topbar-inner">
+      <div class="brand-cluster">
+        <div class="sentinel-logo">
+          <svg viewBox="0 0 36 42" fill="none" class="sentinel-svg">
+            <path d="M18 1L34 7V19C34 29 27 37 18 41C9 37 2 29 2 19V7L18 1Z" fill="url(#sentinelGrad)" stroke="#1e86ec" stroke-width="2"/>
+            <path d="M11 20L16 25L25 15" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="sentinelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1e86ec"/>
+                <stop offset="100%" stop-color="#0c2152"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">ChaoShield</span>
+          <span class="brand-subtitle">Automated Digital Document Forensic Engine</span>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Free Trial Counter Pill -->
+        <div class="trial-pill-badge" id="topbarTrialBadge" onclick="openPricingModal()" title="View Free Trial &amp; SME Plans">
+          <span class="trial-dot"></span>
+          <span id="topbarTrialText">Free Trial: 5/5 Scans Left</span>
+          <span class="trial-upgrade-link">Upgrade &rarr;</span>
+        </div>
+        <button type="button" class="btn btn-xs btn-cyber-primary" onclick="openPricingModal()">
+          <svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          <span>SME Pricing (R50/mo)</span>
+        </button>
+        <button type="button" class="btn btn-xs btn-cyber-outline" onclick="openPolicyModal('popia')">
+          <svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>POPIA &amp; Privacy</span>
+        </button>
+        <button type="button" class="btn btn-xs btn-cyber-outline" onclick="openWhatsAppModal()">
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+          <span>AI Assistant</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APPLICATION CONTAINER -->
+  <main class="main-content">
+    <div class="container">
+      
+      <!-- HERO & INSTRUCTION -->
+      <section class="sentinel-hero">
+        <div class="hero-header" style="margin-bottom: 1.25rem;">
+          <span class="cyber-tag" style="margin-bottom: 0.4rem;">AUTOMATED FRAUD SHIELD</span>
+          <h1 class="hero-title" style="font-size: 2rem; margin-bottom: 0.35rem; line-height: 1.2;">Verify Payment Documents &amp; Receipts</h1>
+          <p class="hero-subtext" style="font-size: 0.92rem; max-width: 600px; margin: 0 auto; line-height: 1.45;">
+            Upload any proof of payment, PDF, or screenshot. <strong>Instant automated forensic check with zero manual settings.</strong>
+          </p>
+        </div>
+
+        <!-- 1. AUTOMATIC WORKBENCH (USER-FRIENDLY DOCUMENT UPLOAD) -->
+        <div class="upload-workbench-card">
+          <!-- Trial Banner & Dropzone Tier Status -->
+          <div class="drop-tier-banner" id="dropTierBanner">
+            <span class="tier-pill" id="tierPillLabel">FREE TRIAL</span>
+            <span class="tier-desc" id="tierRemainingText">You have <strong>5 free document scans</strong> remaining as a standard user. All analyses run 100% locally in-memory under POPIA compliance.</span>
+            <a href="javascript:void(0)" class="tier-link" onclick="openPricingModal()">Upgrade to SME Plan (R50/mo) &rarr;</a>
+          </div>
+
+          <div class="dropzone-perimeter" id="unifiedDropzone">
+            <!-- Hidden native file input styled to cover the dropzone or be triggered anywhere -->
+            <input type="file" id="forensicFileInput" accept="application/pdf, image/png, image/jpeg, image/jpg, image/webp" class="hidden-file-input">
+            
+            <div class="dropzone-idle-state" id="dropzoneIdleState">
+              <div class="drop-icon-pulse">
+                <svg viewBox="0 0 48 48" fill="none" class="upload-cloud-svg">
+                  <path d="M14 36C9.58 36 6 32.42 6 28C6 23.85 9.15 20.44 13.23 20.06C14.42 13.18 20.4 8 27.6 8C33.6 8 38.68 11.75 40.54 17.21C44.75 18.06 48 21.73 48 26.16C48 31.04 44.04 35 39.16 35H36" stroke="#1e86ec" stroke-width="2.6" stroke-linecap="round"/>
+                  <path d="M24 24V40M24 24L18 30M24 24L30 30" stroke="#4ea8fa" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h4>Drag &amp; Drop Document or Screenshot Here</h4>
+              <p class="drop-help">PDF documents, bank confirmation slips, PNG, JPG, or payment screenshots</p>
+              <div class="drop-btn-row">
+                <label for="forensicFileInput" class="btn btn-cyber-primary" id="browseFilesBtn">
+                  <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+                  <span>Browse Files</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Uploading & Processing State -->
+            <div class="dropzone-analyzing-state" id="dropzoneAnalyzingState" style="display:none;">
+              <div class="scanning-spinner"></div>
+              <h3 id="analysisStatusHeading">Analyzing File Automatically...</h3>
+              <p id="analysisStatusSub" class="analysis-status-sub">Checking file integrity &bull; Inspecting text &amp; images &bull; Scanning for scam patterns...</p>
+              
+              <div class="pipeline-progress-track">
+                <div class="pipeline-progress-bar" id="pipelineProgressBar"></div>
+              </div>
+
+              <div class="pipeline-stage-pills" id="pipelineStagePills">
+                <span class="p-pill active" id="stagePill1">1. Format</span>
+                <span class="p-pill" id="stagePill2">2. Details</span>
+                <span class="p-pill" id="stagePill3">3. Integrity</span>
+                <span class="p-pill" id="stagePill4">4. Image</span>
+                <span class="p-pill" id="stagePill5">5. Verification</span>
+              </div>
+            </div>
+          </div>
+
+          </div>
+      </section>
+
+      <!-- RESULTS SECTION (AUTOMATICALLY REVEALED AFTER UPLOAD) -->
+      <section class="sentinel-results" id="forensicResultsSection" style="display:none;">
+        
+        <!-- EXECUTIVE VERDICT BANNER (SIMPLE 3-TIER RESULTS: GREEN, ORANGE, RED) -->
+        <div class="verdict-banner danger" id="verdictBanner">
+          <div class="verdict-left">
+            <div class="verdict-icon-box" id="verdictIcon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="verdict-title-group">
+              <div class="verdict-classification" id="verdictClassification">RED – HIGH RISK</div>
+              <h2 class="verdict-summary" id="verdictSummary">This document looks suspicious. Do not release goods or funds.</h2>
+              <p class="verdict-explanation" id="verdictExplanation">
+                Multiple warning signs detected: Inconsistent formatting, manipulated layout, or missing bank validation.
+              </p>
+            </div>
+          </div>
+          <div class="verdict-right">
+            <div class="verdict-score-card">
+              <span class="score-label" id="scoreLabelText">Scam Probability</span>
+              <div class="score-number-wrap">
+                <span class="score-val" id="compositeScoreVal">94</span>
+                <span class="score-max">%</span>
+              </div>
+              <span class="score-tag text-red" id="riskSeverityTag">HIGH RISK</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ASSESSMENT DISCLAIMER -->
+        <div class="assessment-notice-banner">
+          <span class="notice-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </span>
+          <span><strong>Assessment Notice:</strong> A risk score is an assessment based on detected warning signs, not absolute proof. Always verify transactions directly in your official banking app.</span>
+        </div>
+
+        <!-- ACTION PLAN & SAFETY ADVICE (COMPACT 2-COLUMN GRID) -->
+        <div class="action-plan-safety-row">
+          <!-- WHAT SHOULD I DO? SECTION -->
+          <div class="forensic-card action-plan-card" id="whatShouldIDoCard" style="margin-bottom: 0;">
+            <div class="f-card-header" style="padding: 1rem 1.25rem;">
+              <div class="f-card-title">
+                <span class="f-num">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </span>
+                <h3 style="font-size: 1rem;">WHAT SHOULD I DO?</h3>
+              </div>
+              <span class="chip-format" id="actionPlanUrgencyTag">Recommended Action</span>
+            </div>
+            <div class="f-card-body" style="padding: 1rem 1.25rem;">
+              <p class="body-caption" style="margin-bottom: 0.75rem; font-size: 0.84rem;">Follow these practical steps right now based on what was detected:</p>
+              <div class="action-checklist" id="actionStepsList">
+                <!-- Dynamically populated 3 to 5 practical steps -->
+              </div>
+            </div>
+          </div>
+
+          <!-- SAFETY TIPS SECTION -->
+          <div class="forensic-card safety-tips-card" id="safetyTipsCard" style="margin-bottom: 0;">
+            <div class="f-card-header" style="padding: 1rem 1.25rem;">
+              <div class="f-card-title">
+                <span class="f-num">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </span>
+                <h3 style="font-size: 1rem;">Safety Guidance</h3>
+              </div>
+              <span class="chip-format" id="safetyTipsCountTag">Useful Advice</span>
+            </div>
+            <div class="f-card-body" style="padding: 1rem 1.25rem;">
+              <p class="body-caption" style="margin-bottom: 0.75rem; font-size: 0.84rem;">Helpful guidance based on detected risks:</p>
+              <div class="safety-tips-container" id="safetyTipsGrid">
+                <!-- Dynamically populated conditional tips -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COMPACT FORENSIC INSPECTOR TABS (REDUCES 4,500PX OF SCROLL DEPTH) -->
+        <div class="forensic-inspector-card">
+          <div class="inspector-tabs-nav">
+            <button type="button" class="insp-tab-btn active" id="tabBtnSummary" onclick="switchInspectorTab('summary')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>1. Summary &amp; Metadata</span>
+            </button>
+            <button type="button" class="insp-tab-btn" id="tabBtnVisual" onclick="switchInspectorTab('visual')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              <span>2. Visual Canvas &amp; ELA</span>
+            </button>
+            <button type="button" class="insp-tab-btn" id="tabBtnIntegrity" onclick="switchInspectorTab('integrity')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>3. Cryptographic Hashes &amp; PKI</span>
+            </button>
+            <button type="button" class="insp-tab-btn" id="tabBtnLinguistics" onclick="switchInspectorTab('linguistics')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>4. Text &amp; Phishing NLP</span>
+            </button>
+          </div>
+
+          <!-- TAB 1: SUMMARY & METADATA TABLE -->
+          <div class="insp-tab-pane active" id="paneSummary">
+            <!-- Format tag shown at top of metadata -->
+            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 0 0.5rem;">
+              <span style="font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Document Type:</span>
+              <span class="chip-format" id="metaFormatTag" style="font-size:0.72rem;">PDF Document</span>
+            </div>
+            <!-- EXTRACTED KEY TRANSACTION ENTITIES -->
+            <div class="extracted-entities-bar" id="extractedEntitiesBar" style="display:none;"></div>
+
+            <!-- DYNAMIC METADATA FORENSIC SUMMARY BANNER -->
+            <div class="meta-forensic-summary-box" id="metaForensicSummaryBox" style="display:none; margin-bottom: 1.25rem;"></div>
+
+            <div class="metadata-table-wrap">
+              <table class="metadata-table" id="metadataTable">
+                <thead>
+                  <tr><th>Metadata Property</th><th>Extracted Value</th><th>Forensic Status</th></tr>
+                </thead>
+                <tbody id="metadataTableBody">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="missing-meta-callout" id="missingMetaCallout">
+              <!-- Highlight missing or stripped metadata -->
+            </div>
+          </div>
+
+          <!-- TAB 2: VISUAL CANVAS & ELA -->
+          <div class="insp-tab-pane" id="paneVisual" style="display:none;">
+            <h4 id="visualForensicsTitle" style="font-size:0.95rem;color:var(--color-navy-deep);margin:0 0 0.75rem;">Document Page &amp; Visual Forensic Canvas</h4>
+            <div class="canvas-forensic-workbench">
+              <div class="canvas-view-controls">
+                <button type="button" class="view-mode-btn active" id="btnViewOriginal" onclick="switchVisualCanvasMode('original')">Document / Page View</button>
+                <button type="button" class="view-mode-btn" id="btnViewEla" onclick="switchVisualCanvasMode('ela')">Error Level Analysis (ELA)</button>
+                <button type="button" class="view-mode-btn" id="btnViewLuma" onclick="switchVisualCanvasMode('luma')">Luminance Noise Map</button>
+              </div>
+
+              <div class="canvas-display-frame">
+                <canvas id="forensicCanvas"></canvas>
+                <div class="canvas-watermark-overlay" id="canvasTamperOverlay" style="display:none;">
+                  <span>SUSPICIOUS MANIPULATION ARTIFACTS</span>
+                </div>
+              </div>
+
+              <!-- Page navigation if multi-page PDF -->
+              <div class="pdf-page-controls" id="pdfPageControls" style="display:none;">
+                <button type="button" class="btn btn-xs btn-cyber-outline" id="btnPdfPrev" onclick="changePdfPage(-1)">◀ Previous</button>
+                <span id="pdfPageIndicator" class="pdf-page-indicator">Page 1 of 1</span>
+                <button type="button" class="btn btn-xs btn-cyber-outline" id="btnPdfNext" onclick="changePdfPage(1)">Next ▶</button>
+              </div>
+            </div>
+
+            <div class="forensic-checks-checklist" id="imageForensicChecksList">
+              <!-- Dynamic checks for font baseline, spacing, compression blocks -->
+            </div>
+          </div>
+
+          <!-- TAB 3: INTEGRITY & SIGNATURES -->
+          <div class="insp-tab-pane" id="paneIntegrity" style="display:none;">
+            <div class="integrity-body" style="padding: 0; margin-bottom: 1.5rem;">
+              <div class="hash-field-group">
+                <label>SHA-256 Cryptographic Fingerprint:</label>
+                <div class="hash-display-row">
+                  <code class="hash-code" id="currentSha256Display">Computing...</code>
+                  <button type="button" class="btn btn-xs btn-cyber-outline" onclick="copyCurrentHash()">Copy Hash</button>
+                </div>
+              </div>
+
+              <div class="integrity-badge new" id="integrityVerdictBadge" style="display:inline-block;margin-top:0.5rem;padding:0.3rem 0.9rem;border-radius:4px;font-size:0.75rem;font-weight:700;letter-spacing:0.04em;">NEW HASH RECORD REGISTERED</div>
+              <div class="integrity-status-box" id="integrityStatusBox" style="margin-top: 0.75rem;">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #edf4fb; padding-top: 1.25rem;">
+              <h4 style="font-size: 0.95rem; color: var(--color-navy-deep); margin-bottom: 0.65rem;">PDF Structure &amp; Digital Signatures</h4>
+              <div class="pdf-structural-tree" id="pdfStructureTree">
+                <!-- Incremental updates, xref anomalies, signatures -->
+              </div>
+              <div class="forensic-checks-checklist" id="pdfForensicChecksList">
+                <!-- Dynamic checks for dates mismatch, editing tools, text overlay -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: LINGUISTICS & PHISHING NLP -->
+          <div class="insp-tab-pane" id="paneLinguistics" style="display:none;">
+            <div class="extracted-text-preview-box" style="margin-bottom: 1.25rem;">
+              <div class="text-preview-header">
+                <span>EXTRACTED DOCUMENT CONTENT (CLEAN TEXT)</span>
+                <span class="char-count" id="extractedCharCount">0 chars</span>
+              </div>
+              <div class="text-preview-content" id="extractedTextContent">
+                <!-- Analyzed text with highlighted red flags -->
+              </div>
+            </div>
+
+            <div class="scam-tactics-breakdown" id="scamTacticsList">
+              <!-- Dynamically identified phishing, intimidation, OTP requests -->
+            </div>
+
+            <!-- URL / LINK THREAT INTELLIGENCE -->
+            <div style="margin-top:1.25rem;border-top:1px solid #edf4fb;padding-top:1.25rem;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+                <h4 style="font-size:0.95rem;color:var(--color-navy-deep);margin:0;">Link &amp; URL Threat Analysis</h4>
+                <span class="chip-format" id="linksCountBadge">0 Links Extracted</span>
+              </div>
+              <div class="metadata-table-wrap">
+                <table class="metadata-table">
+                  <thead><tr><th>URL</th><th>Protocol</th><th>Issues Detected</th><th>Risk</th></tr></thead>
+                  <tbody id="linksTableBody">
+                    <tr><td colspan="4" style="text-align:center;color:#64748b;padding:1.5rem;">No hyperlinks identified in uploaded document.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXPORT DOSSIER & ACTIONS BAR -->
+        <div class="actions-dossier-bar">
+          <div class="actions-left">
+            <button type="button" class="btn btn-cyber-primary" onclick="window.print()">
+              <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              <span>Print / Save Forensic Report (PDF)</span>
+            </button>
+            <button type="button" class="btn btn-cyber-outline" onclick="downloadForensicDocketJson()">
+              <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Export Evidence Docket (JSON)</span>
+            </button>
+            <button type="button" class="btn btn-cyber-outline" onclick="resetToUploadNew()">
+              <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+              <span>Analyze Another Document</span>
+            </button>
+          </div>
+          <div class="actions-right">
+            <span class="report-timestamp" id="reportGeneratedTimestamp">Generated: Ready</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: MULTILINGUAL WHATSAPP AI ASSISTANT (COMPACT HIGH-CONVERTING BANNER) -->
+      <section class="sentinel-whatsapp-section" id="whatsappAiAssistantSection">
+        <div class="wa-compact-card">
+          <div class="wa-compact-left">
+            <div class="wa-compact-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.889-9.885 9.889m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 00-3.48-8.413Z"/>
+              </svg>
+            </div>
+            <div class="wa-compact-text">
+              <span class="cyber-tag text-green" style="font-size: 0.68rem; padding: 0.15rem 0.5rem;">MULTILINGUAL SUPPORT &bull; 4 SA LANGUAGES</span>
+              <h3 style="font-size: 1.15rem; font-weight: 800; margin: 0.25rem 0 0.35rem; color: #ffffff;">Need Scam Guidance on WhatsApp?</h3>
+              <p style="font-size: 0.85rem; color: #cbdcf2; margin: 0; line-height: 1.45;">
+                Ask questions in <strong>Tshivenda</strong>, <strong>isiZulu</strong>, <strong>Sepedi</strong>, or <strong>English</strong> with automated text replies &amp; spoken voice notes.
+              </p>
+            </div>
+          </div>
+          <div class="wa-compact-actions">
+            <a href="https://wa.me/27606599730?text=Hello%20ChaoShield%20Scam%20Sentinel%20AI" target="_blank" class="btn btn-wa-green">
+              <span>Chat on WhatsApp (+27 60 659 9730) &rarr;</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. PRICING SECTION: NORMAL PERSON FREE TRIAL & SME R50/MONTH -->
+      <section class="sentinel-pricing-section" id="pricingSection">
+        <div class="pricing-header" style="text-align: center; max-width: 620px; margin: 0 auto 1.5rem;">
+          <span class="cyber-tag">TRANSPARENT PRICING</span>
+          <h2 class="hero-title" style="font-size: 1.75rem; margin-top: 0.35rem; margin-bottom: 0.4rem;">Affordable Protection for Everyone</h2>
+          <p class="hero-subtext" style="font-size: 0.88rem; margin: 0 auto;">
+            Individuals get <strong>5 free scans</strong>. Businesses upgrade to our SME plan for only <strong>R50/month</strong>.
+          </p>
+        </div>
+
+        <div class="pricing-cards-grid">
+          <!-- CARD 1: Free Trial -->
+          <div class="pricing-card" id="cardFreeTrial">
+            <div class="pricing-tier-name">Free Trial</div>
+            <div class="pricing-tier-tagline">For individuals verifying a single suspicious transaction.</div>
+            <div class="pricing-price-wrap">
+              <span class="price-currency">R</span>
+              <span class="price-figure">0</span>
+              <span class="price-period">/ 5 scans free</span>
+            </div>
+            <ul class="pricing-features-list">
+              <li><span class="p-check">&check;</span> Up to 5 free forensic scans</li>
+              <li><span class="p-check">&check;</span> PDF metadata &amp; Word forgery flags</li>
+              <li><span class="p-check">&check;</span> Visual Error Level Analysis (ELA)</li>
+              <li><span class="p-check">&check;</span> 100% In-memory POPIA privacy</li>
+            </ul>
+            <button type="button" class="btn btn-cyber-outline btn-block" onclick="scrollToUpload()">
+              <span id="btnFreeTrialLabel">Start Free (5 Scans Left)</span>
+            </button>
+          </div>
+
+          <!-- CARD 2: SME Business Plan (R50 / month) -->
+          <div class="pricing-card featured" id="cardSmePlan">
+            <div class="pricing-badge-popular">BEST FOR SMES &bull; R50/MO</div>
+            <div class="pricing-tier-name">SME Business</div>
+            <div class="pricing-tier-tagline">Fraud shield for shops, merchants &amp; contractors.</div>
+            <div class="pricing-price-wrap">
+              <span class="price-currency">R</span>
+              <span class="price-figure">50</span>
+              <span class="price-period">/ month</span>
+            </div>
+            <ul class="pricing-features-list">
+              <li><span class="p-check">&check;</span> <strong>Unlimited</strong> document verification scans</li>
+              <li><span class="p-check">&check;</span> PayShap / BankServAfrica validation</li>
+              <li><span class="p-check">&check;</span> Court-ready ECTA Sec 86 evidence dockets</li>
+              <li><span class="p-check">&check;</span> 24/7 Priority WhatsApp AI Assistant</li>
+            </ul>
+            <button type="button" class="btn btn-cyber-primary btn-block" onclick="activateSubscription('sme')">
+              <span id="btnSmeLabel">Subscribe &mdash; R50 / Month</span>
+            </button>
+          </div>
+
+          <!-- CARD 3: Individual Pro -->
+          <div class="pricing-card" id="cardIndividualPlan">
+            <div class="pricing-tier-name">Individual Pro</div>
+            <div class="pricing-tier-tagline">For frequent marketplace buyers &amp; freelancers.</div>
+            <div class="pricing-price-wrap">
+              <span class="price-currency">R</span>
+              <span class="price-figure">25</span>
+              <span class="price-period">/ month</span>
+            </div>
+            <ul class="pricing-features-list">
+              <li><span class="p-check">&check;</span> Unlimited personal document checks</li>
+              <li><span class="p-check">&check;</span> Phishing link &amp; spoof domain checks</li>
+              <li><span class="p-check">&check;</span> Multilingual WhatsApp voice notes</li>
+              <li><span class="p-check">&check;</span> Cancel anytime &bull; No contracts</li>
+            </ul>
+            <button type="button" class="btn btn-cyber-outline btn-block" onclick="activateSubscription('individual')">
+              <span id="btnIndividualLabel">Subscribe &mdash; R25 / Month</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      </div>
+  </main>
+
+  <!-- FLOATING WHATSAPP AI ASSISTANT TRIGGER BUTTON -->
+  <aside class="wa-floating-trigger" id="waFloatingTrigger" onclick="openWhatsAppModal()" aria-label="Open Multilingual WhatsApp AI Assistant">
+    <div class="wa-float-icon">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.889-9.885 9.889m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 00-3.48-8.413Z"/>
+      </svg>
+      <span class="pulse-ring-green"></span>
+    </div>
+    <div class="wa-float-text">
+      <strong>WhatsApp AI Assistant</strong>
+      <span>Venda &bull; Zulu &bull; Sepedi &bull; English &bull; Voice Notes</span>
+    </div>
+  </aside>
+
+  <!-- MULTILINGUAL WHATSAPP AI ASSISTANT MODAL & CONSOLE -->
+  <div class="cyber-modal-backdrop" id="whatsAppAssistantModal">
+    <div class="cyber-modal-card wa-assistant-modal-card">
+      
+      <!-- WA Header -->
+      <div class="wa-modal-header">
+        <div class="wa-header-meta">
+          <div class="wa-avatar-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            <span class="online-indicator"></span>
+          </div>
+          <div>
+            <div class="wa-header-title">
+              <strong>ChaoShield AI</strong>
+              <span class="badge-verified-wa">Official Support &bull; Verified</span>
+            </div>
+            <span class="wa-header-sub">Multilingual Assistant &bull; 060 659 9730</span>
+          </div>
+        </div>
+
+        <div class="wa-modal-header-actions">
+          <a href="https://wa.me/27606599730?text=Hello%20ChaoShield%20Scam%20Sentinel%20AI" target="_blank" class="btn btn-xs btn-wa-green">
+            Launch in WhatsApp &rarr;
+          </a>
+          <button type="button" class="modal-close" onclick="closeWhatsAppModal()">&times;</button>
+        </div>
+      </div>
+
+      <!-- Language Selector Bar -->
+      <div class="wa-lang-selector-bar">
+        <span class="lang-bar-label">Language:</span>
+        <button type="button" class="wa-lang-chip active" id="langBtnVenda" onclick="selectAssistantLanguage('ve')">
+          Tshivenda (Venda)
+        </button>
+        <button type="button" class="wa-lang-chip" id="langBtnZulu" onclick="selectAssistantLanguage('zu')">
+          isiZulu (Zulu)
+        </button>
+        <button type="button" class="wa-lang-chip" id="langBtnSepedi" onclick="selectAssistantLanguage('nso')">
+          Sepedi (N. Sotho)
+        </button>
+        <button type="button" class="wa-lang-chip" id="langBtnEnglish" onclick="selectAssistantLanguage('en')">
+          English
+        </button>
+        <button type="button" class="wa-lang-chip" id="langBtnAuto" onclick="selectAssistantLanguage('auto')">
+          Auto-Detect Language
+        </button>
+      </div>
+
+      <!-- Quick Inquiry Category Prompts -->
+      <div class="wa-quick-inquiries-row" id="waQuickInquiriesRow">
+        <!-- Rendered based on selected language -->
+      </div>
+
+      <!-- WA Chat Stream Body -->
+      <div class="wa-modal-chat-window" id="waAssistantChatWindow">
+        <div class="wa-chat-bubble-date">TODAY &bull; ENCRYPTED SECURE CHANNEL</div>
+
+        <!-- Initial Welcome Message -->
+        <div class="wa-msg incoming" id="waInitialWelcomeMsg">
+          <div class="wa-bubble">
+            <p id="waWelcomeText">
+              <strong>Ndaa! Welcome to ChaoShield AI.</strong><br>
+              I can assist you in <strong>Tshivenda</strong>, <strong>isiZulu</strong>, <strong>Sepedi</strong>, or <strong>English</strong>.<br><br>
+              Ask me about:<br>
+              • Identifying fake Proof of Payment (POP) screenshots<br>
+              • How to upload and analyze PDFs &amp; digital documents<br>
+              • Understanding your security report and SHA-256 hash<br><br>
+              <em>You can type a message below, or click the microphone to send a voice note!</em>
+            </p>
+            <span class="wa-time" id="waInitialTime">11:15</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Chat Stream -->
+        <div id="waDynamicChatStream"></div>
+      </div>
+
+      <!-- VOICE NOTE & STT / TTS PROCESSING DOCK -->
+      <div class="wa-voice-processing-dock" id="waVoiceProcessingDock" style="display:none;">
+        <div class="voice-dock-header">
+          <span class="recording-indicator" id="waRecordingPulse"></span>
+          <strong id="voiceDockTitle">Voice Note STT Pipeline Active</strong>
+          <span class="voice-detected-lang-badge" id="voiceDetectedLangBadge">Language: Detecting...</span>
+        </div>
+        <div class="voice-stt-transcript" id="voiceSttTranscript">
+          <em>Listening... Speak now in Venda, Zulu, Sepedi, or English...</em>
+        </div>
+      </div>
+
+      <!-- WA Input Controls Bar -->
+      <div class="wa-modal-input-bar">
+        <button type="button" class="wa-attach-btn" title="Simulate File Attachment" onclick="simulateWaAttachment()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l7.9-7.9"/></svg>
+        </button>
+
+        <input type="text" id="waChatInputText" class="wa-text-input" placeholder="Type your question or send a voice note..." onkeypress="handleWaInputKeyPress(event)">
+
+        <button type="button" class="btn-wa-mic" id="waMicBtn" title="Hold to Record Voice Note" onclick="toggleVoiceNoteRecording()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        </button>
+
+        <button type="button" class="btn-wa-send" id="waSendBtn" onclick="sendWaTextMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  
+  <!-- PLATFORM FOOTER & POPIA STATUTORY COMPLIANCE -->
+  <footer class="sentinel-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="brand-cluster">
+            <div class="sentinel-logo">
+              <svg viewBox="0 0 36 42" fill="none" class="sentinel-svg">
+                <path d="M18 1L34 7V19C34 29 27 37 18 41C9 37 2 29 2 19V7L18 1Z" fill="url(#footerSentinelGrad)" stroke="#1e86ec" stroke-width="2"/>
+                <path d="M11 20L16 25L25 15" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                  <linearGradient id="footerSentinelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#1e86ec"/>
+                    <stop offset="100%" stop-color="#0c2152"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <span class="brand-title">ChaoShield</span>
+              <span class="brand-subtitle">Automated Forensic Engine</span>
+            </div>
+          </div>
+          <p>
+            Safeguarding South African consumers, sole proprietors, and SMEs against electronic proof-of-payment (POP) fraud, digital invoice manipulation, and synthetic banking documents.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>Platform</h5>
+          <ul class="footer-links">
+            <li><a href="#unifiedDropzone" onclick="scrollToUpload()">Automated Scanner</a></li>
+            <li><a href="#unifiedDropzone" onclick="scrollToUpload()">Upload Proof of Payment</a></li>
+            <li><a href="#registrySection">Cryptographic Registry</a></li>
+            <li><a href="#pricingSection">Pricing Plans</a></li>
+            <li><a href="javascript:void(0)" onclick="openWhatsAppModal()">WhatsApp AI Assistant</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal &amp; POPIA</h5>
+          <ul class="footer-links">
+            <li><a href="javascript:void(0)" onclick="openPolicyModal('popia')">POPIA Act Policy (Act 4 of 2013)</a></li>
+            <li><a href="javascript:void(0)" onclick="openPolicyModal('privacy')">Privacy Policy</a></li>
+            <li><a href="javascript:void(0)" onclick="openPolicyModal('popia')">Information Officer Details</a></li>
+            <li><a href="javascript:void(0)" onclick="openPolicyModal('popia')">ECTA Act Sec 86 Evidence</a></li>
+            <li><a href="javascript:void(0)" onclick="openPolicyModal('privacy')">Data Subject Rights</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Pricing Tiers</h5>
+          <ul class="footer-links">
+            <li><a href="javascript:void(0)" onclick="openPricingModal()">Free Trial (5 Scans)</a></li>
+            <li><a href="javascript:void(0)" onclick="activateSubscription('sme')">SME Plan &mdash; R50 / mo</a></li>
+            <li><a href="javascript:void(0)" onclick="activateSubscription('individual')">Individual &mdash; R25 / mo</a></li>
+            <li><a href="javascript:void(0)" onclick="resetFreeTrialDemo()">Reset Demo Scans</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          &copy; 2026 ChaoShield South Africa. All Rights Reserved. Engineered for 100% client-side privacy.
+        </div>
+        <div class="footer-popia-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>POPIA Act (No. 4 of 2013) Compliant &bull; 100% In-Memory Analysis</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- POPIA ACT (ACT 4 OF 2013) & PRIVACY POLICY MODAL -->
+  <div class="cyber-modal-backdrop" id="policyModal">
+    <div class="cyber-modal-card policy-modal-card">
+      <div class="wa-modal-header">
+        <div class="wa-header-meta">
+          <div class="wa-avatar-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="wa-header-title">
+              <strong>Statutory Compliance &amp; Legal Framework</strong>
+              <span class="badge-verified-wa" style="background:#10b981;">Republic of South Africa</span>
+            </div>
+            <span class="wa-header-sub">POPIA Act No. 4 of 2013 &bull; Constitution of the RSA</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closePolicyModal()">&times;</button>
+      </div>
+
+      <!-- Policy Tabs Bar -->
+      <div class="policy-tabs-bar">
+        <button type="button" class="policy-tab-btn active" id="tabBtnPopia" onclick="switchPolicyTab('popia')">
+          POPIA Act Policy (Act 4 of 2013)
+        </button>
+        <button type="button" class="policy-tab-btn" id="tabBtnPrivacy" onclick="switchPolicyTab('privacy')">
+          General Privacy &amp; Data Policy
+        </button>
+      </div>
+
+      <!-- Policy Content Body -->
+      <div class="policy-scroll-body">
+        
+        <!-- TAB 1: POPIA ACT POLICY -->
+        <div id="popiaTabContent">
+          <h3>Protection of Personal Information Act (POPIA) Policy</h3>
+          <p>
+            <strong>Statutory Compliance Statement pursuant to the Protection of Personal Information Act, No. 4 of 2013 (POPIA), Republic of South Africa.</strong>
+          </p>
+
+          <div class="policy-callout">
+            <strong>Key Architecture Guarantee &mdash; Client-Side Privacy:</strong>
+            ChaoShield processes all uploaded PDF documents, bank receipts, and payment screenshots <strong>exclusively inside your local web browser's RAM</strong>. Document binaries and metadata are NEVER uploaded, stored, or indexed on external cloud servers.
+          </div>
+
+          <h4>1. Purpose and Scope</h4>
+          <p>
+            This policy applies to all users, sole proprietors, small-and-medium enterprises (SMEs), and organizations using the ChaoShield platform to detect fraudulent proof-of-payment (POP) notices, synthetic documents, and invoice manipulation. We adhere strictly to the conditions set out in Chapter 3 of the POPIA Act.
+          </p>
+
+          <h4>2. The 8 Lawful Processing Conditions under POPIA</h4>
+          <ul>
+            <li><strong>Condition 1 &mdash; Accountability:</strong> ChaoShield maintains full governance over its client-side processing algorithms, ensuring that zero unauthorized interception or persistence of financial identifiers occurs during metadata extraction.</li>
+            <li><strong>Condition 2 &mdash; Processing Limitation:</strong> Processing is strictly limited to extracting document structural markers (e.g., PDF creator software, creation timestamps, and digital certificate flags). Personal identifying information (such as account numbers or full names) is parsed ephemerally in-memory only to evaluate authenticity and is immediately purged upon browser session termination.</li>
+            <li><strong>Condition 3 &mdash; Purpose Specification:</strong> Data messages and electronic receipts are processed exclusively for the purpose of fraud detection, forensic validation, and scam risk mitigation.</li>
+            <li><strong>Condition 4 &mdash; Further Processing Limitation:</strong> Under no circumstances are document records, metadata headers, or financial details repurposed, sold, or shared with third-party advertising or analytics networks.</li>
+            <li><strong>Condition 5 &mdash; Information Quality:</strong> We employ standard cryptographic hashing algorithms (SHA-256) to verify that the file being evaluated has not been tampered with or altered during transit.</li>
+            <li><strong>Condition 6 &mdash; Openness &amp; Transparency:</strong> Full technical documentation regarding our metadata detection rules (e.g., flagging Microsoft Word or Canva creators for alleged bank POPs) is made openly accessible to users.</li>
+            <li><strong>Condition 7 &mdash; Security Safeguards:</strong> By leveraging local browser isolation (Web Crypto API, Canvas sandbox, and client-side PDF.js), the risk of cloud-based data breaches or unauthorized access is eliminated by design.</li>
+            <li><strong>Condition 8 &mdash; Data Subject Participation:</strong> Users retain complete control over their local cryptographic registry. Users may at any time inspect stored hashes or clear their browser's local storage with a single click.</li>
+          </ul>
+
+          <h4>3. Fair Use &amp; Commercial SME Pricing Model</h4>
+          <p>
+            ChaoShield offers tiered access designed to empower every South African against digital scams:
+          </p>
+          <ul>
+            <li><strong>Free Trial for Individuals:</strong> Standard individual users receive up to <strong>5 free forensic scans</strong> to evaluate suspicious transactions without entering payment information.</li>
+            <li><strong>SME Monthly Plan (R50 / month):</strong> Small and medium enterprises enjoy unlimited monthly verifications, multi-device usage, downloadable cryptographic dockets compliant with the Electronic Communications and Transactions Act (ECTA No. 25 of 2002, Section 86), and priority 24/7 multilingual WhatsApp AI assistance.</li>
+          </ul>
+
+          <h4>4. Designated Information Officer</h4>
+          <p>
+            In terms of Section 55 and Section 56 of the POPIA Act, our appointed Information Officer oversees data protection compliance:
+          </p>
+          <ul>
+            <li><strong>Title:</strong> Information Officer &amp; Compliance Director</li>
+            <li><strong>Entity:</strong> ChaoShield Technologies SA</li>
+            <li><strong>Physical Jurisdiction:</strong> Pretoria &bull; Johannesburg, Gauteng, Republic of South Africa</li>
+            <li><strong>Official Compliance Email:</strong> <a href="mailto:support@chaoshield.co.za" class="tier-link">support@chaoshield.co.za</a></li>
+          </ul>
+
+          <h4>5. Complaints to the Information Regulator</h4>
+          <p>
+            You have the right to lodge a complaint with the South African Information Regulator if you believe your personal information has been unlawfully handled:
+          </p>
+          <div class="policy-callout">
+            <strong>The Information Regulator (South Africa):</strong><br>
+            JD House, 27 Stiemens Street, Braamfontein, Johannesburg, 2001<br>
+            Complaints email: <a href="mailto:POPIAComplaints@inforegulator.org.za" class="tier-link">POPIAComplaints@inforegulator.org.za</a><br>
+            General enquiries: <a href="mailto:enquiries@inforegulator.org.za" class="tier-link">enquiries@inforegulator.org.za</a>
+          </div>
+        </div>
+
+        <!-- TAB 2: PRIVACY POLICY -->
+        <div id="privacyTabContent" style="display:none;">
+          <h3>ChaoShield General Privacy Policy</h3>
+          <p>
+            <strong>Last Updated: November 2026 &bull; Committed to Absolute Privacy &amp; Data Minimization</strong>
+          </p>
+
+          <div class="policy-callout">
+            <strong>Our Zero-Cloud Storage Guarantee:</strong>
+            We do not maintain a remote database of uploaded bank receipts, invoices, or customer identities. Your files never leave your device.
+          </div>
+
+          <h4>1. What Information We Access and Process</h4>
+          <p>
+            When you drop or select a file into ChaoShield, the browser executes client-side JavaScript to inspect:
+          </p>
+          <ul>
+            <li><strong>File Container &amp; Format:</strong> Magic bytes (%PDF-1.x, PNG headers, JPEG EXIF data).</li>
+            <li><strong>PDF Metadata Fields:</strong> /Creator, /Producer, /Author, /CreationDate, /ModDate, and /Title dictionaries.</li>
+            <li><strong>Cryptographic Digest:</strong> Local SHA-256 computation to confirm integrity against known tampered documents.</li>
+            <li><strong>Visible Document Text:</strong> Rendered client-side to verify financial entities (Bank name, settlement status, PayShap ISO 20022 clearing tokens).</li>
+          </ul>
+
+          <h4>2. Browser Local Storage (Cookies &amp; Telemetry)</h4>
+          <p>
+            ChaoShield does NOT use tracking cookies or third-party profiling pixels. We utilize standard HTML5 Local Storage strictly for:
+          </p>
+          <ul>
+            <li><code>sentinel_free_scans_left</code>: To keep track of your 5 free trial scans.</li>
+            <li><code>sentinel_is_subscribed</code>: To remember your active SME (R50/mo) or Pro subscription state.</li>
+            <li><code>sentinel_sha256_registry_v2</code>: Your local forensic registry of analyzed files so you can cross-examine duplicate uploads.</li>
+          </ul>
+
+          <h4>3. Electronic Evidence &amp; ECTA Act Compliance</h4>
+          <p>
+            Under Section 15 and Section 86 of the South African Electronic Communications and Transactions Act (ECTA No. 25 of 2002), digital evidence derived from cryptographic hashes and unmodified metadata streams constitutes admissible evidence in commercial dispute resolution and criminal fraud investigations.
+          </p>
+
+          <h4>4. Your Rights as a Data Subject</h4>
+          <p>
+            You have the right to request access to any data you store locally, export your cryptographic registry, or immediately purge all stored records by clicking the "Reset Demo Scans" or "Clear Registry" buttons located on the platform.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="policy-callout" style="margin: 0; border-radius: 0; border-left: none; border-top: 1px solid #edf4fb; background: #fafcff; display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.75rem;">
+        <span><strong>Questions?</strong> Contact our compliance team at <code>support@chaoshield.co.za</code></span>
+        <button type="button" class="btn btn-xs btn-cyber-primary" onclick="closePolicyModal()">Close &amp; Return to App</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING & SUBSCRIPTION UPGRADE MODAL -->
+  <div class="cyber-modal-backdrop" id="pricingModal">
+    <div class="cyber-modal-card" style="max-width: 760px; max-height: 90vh; overflow-y: auto;">
+      <div class="wa-modal-header">
+        <div class="wa-header-meta">
+          <div class="wa-avatar-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="20" height="14" x="2" y="5" rx="2"/>
+              <line x1="2" x2="22" y1="10" y2="10"/>
+            </svg>
+          </div>
+          <div>
+            <div class="wa-header-title">
+              <strong>Select Your Protection Plan</strong>
+              <span class="badge-verified-wa">Secure ZAR Billing</span>
+            </div>
+            <span class="wa-header-sub" id="modalTrialCountText">Free Trial: 5 free scans for normal users &bull; SME Plan R50/mo</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closePricingModal()">&times;</button>
+      </div>
+
+      <div style="padding: 1.5rem 1.75rem;">
+        
+        <div class="pricing-cards-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1.25rem;">
+          <!-- CARD: SME BUSINESS (R50 / mo) -->
+          <div class="pricing-card featured" style="padding: 1.5rem;">
+            <div class="pricing-badge-popular" style="top: -11px; font-size: 0.65rem;">BEST VALUE FOR SMES</div>
+            <div class="pricing-tier-name" style="font-size: 1.15rem;">SME Business Plan</div>
+            <div class="pricing-tier-tagline" style="font-size: 0.8rem; min-height: 32px;">For retail stores, wholesalers, timber merchants &amp; contractors.</div>
+            <div class="pricing-price-wrap" style="padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+              <span class="price-currency">R</span>
+              <span class="price-figure" style="font-size: 2.3rem;">50</span>
+              <span class="price-period">/ month</span>
+            </div>
+            <ul class="pricing-features-list" style="gap: 0.5rem; margin-bottom: 1.25rem; font-size: 0.8rem;">
+              <li><span class="p-check">&check;</span> <strong>Unlimited</strong> PDF &amp; image verification scans</li>
+              <li><span class="p-check">&check;</span> Word/Canva forgery &amp; metadata disparity flags</li>
+              <li><span class="p-check">&check;</span> BankServAfrica / PayShap clearance dockets</li>
+              <li><span class="p-check">&check;</span> 24/7 WhatsApp AI Assistant (4 SA languages)</li>
+              <li><span class="p-check">&check;</span> Legal ECTA Act Sec 86 evidence certificates</li>
+            </ul>
+            <button type="button" class="btn btn-cyber-primary btn-block" onclick="activateSubscription('sme')">
+              <span>Activate SME Plan &mdash; R50 / mo</span>
+            </button>
+          </div>
+
+          <!-- CARD: INDIVIDUAL PRO (R25 / mo) -->
+          <div class="pricing-card" style="padding: 1.5rem;">
+            <div class="pricing-tier-name" style="font-size: 1.15rem;">Individual Pro</div>
+            <div class="pricing-tier-tagline" style="font-size: 0.8rem; min-height: 32px;">For marketplace buyers, freelancers &amp; personal banking checks.</div>
+            <div class="pricing-price-wrap" style="padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+              <span class="price-currency">R</span>
+              <span class="price-figure" style="font-size: 2.3rem;">25</span>
+              <span class="price-period">/ month</span>
+            </div>
+            <ul class="pricing-features-list" style="gap: 0.5rem; margin-bottom: 1.25rem; font-size: 0.8rem;">
+              <li><span class="p-check">&check;</span> Unlimited personal document checks</li>
+              <li><span class="p-check">&check;</span> PDF author &amp; creation date inspection</li>
+              <li><span class="p-check">&check;</span> Fake banking SMS &amp; phishing link checks</li>
+              <li><span class="p-check">&check;</span> Multilingual WhatsApp voice notes</li>
+              <li><span class="p-check">&check;</span> Cancel anytime &bull; No contracts</li>
+            </ul>
+            <button type="button" class="btn btn-cyber-outline btn-block" onclick="activateSubscription('individual')">
+              <span>Activate Pro &mdash; R25 / mo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Testing / Demo Reset Strip -->
+        <div style="margin-top: 1.5rem; padding: 1rem; background: #f8fbfe; border: 1px dashed #c9e2fa; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+          <div style="font-size: 0.82rem; color: var(--text-secondary);">
+            <strong>Testing or Evaluation Mode:</strong> Need to test the free trial flow again?
+          </div>
+          <button type="button" class="btn btn-xs btn-cyber-outline" onclick="resetFreeTrialDemo()">
+            Reset Demo Scans (5 Free)
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

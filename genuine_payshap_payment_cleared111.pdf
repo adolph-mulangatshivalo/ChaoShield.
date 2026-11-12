@@ -1,0 +1,97 @@
+%PDF-1.4
+1 0 obj
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+  /Type /Pages
+  /Kids [3 0 R]
+  /Count 1
+>>
+endobj
+3 0 obj
+<<
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 595 842]
+  /Resources <<
+    /Font <<
+      /F1 <<
+        /Type /Font
+        /Subtype /Type1
+        /BaseFont /Helvetica-Bold
+      >>
+    >>
+  >>
+  /Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+  /Length 814
+>>
+stream
+BT
+/F1 20 Tf
+50 750 Td
+(BANKSERVAFRICA PAYSHAP CLEARANCE ADVICE) Tj
+/F1 11 Tf
+0 -26 Td
+(Official Real-Time Clearing Proof of Payment - National Payment System) Tj
+0 -32 Td
+/F1 12 Tf
+(Transaction Reference: PSH-20261112-9844201ZA) Tj
+0 -20 Td
+(SARB Clearing Token: NPS-CLEAR-2026-88391) Tj
+0 -20 Td
+(Payment Rail: PayShap Immediate Settlement (ISO 20022)) Tj
+0 -20 Td
+(Clearing Timestamp: 12 Nov 2026, 09:05:42 SAST) Tj
+0 -30 Td
+(Beneficiary: Maitele Timber & Craft) Tj
+0 -20 Td
+(Originating Account: FNB Corporate Online Banking) Tj
+0 -20 Td
+(Receiving Account: Standard Bank Business Account) Tj
+0 -30 Td
+/F1 16 Tf
+(Amount Cleared: R 18,500.00 ZAR) Tj
+0 -25 Td
+/F1 11 Tf
+(Status: SETTLED & IRREVOCABLE - FUNDS REFLECTED) Tj
+0 -35 Td
+(Audit Trail: Cryptographically signed by SARB Clearing Rails Engine 16.6) Tj
+ET
+endstream
+endobj
+5 0 obj
+<<
+  /Type /Info
+  /Title (PayShap Instant Clearing Confirmation)
+  /Author (SARB Automated Clearing Daemon)
+  /Creator (BankServAfrica PayShap Rails v3.2)
+  /Producer (OpenText Exstream Engine 16.6)
+  /CreationDate (D:20261112090542+02'00')
+  /ModDate (D:20261112090542+02'00')
+>>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000306 00000 n 
+0000000400 00000 n 
+trailer
+<<
+  /Size 6
+  /Root 1 0 R
+  /Info 5 0 R
+>>
+startxref
+650
+%%EOF
